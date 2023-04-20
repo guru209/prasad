@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>String Comparison</title>
+</head>
+
+<body>
+	<h1>String Comparison</h1>
+	<label for="num_strings">Enter the number of strings to compare (maximum 5):</label>
+	<input type="number" id="num_strings" min="2" max="5">
+	<button onclick="getInput()">Submit</button>
+
+	<div id="input_window" style="display: none;">
+		<h2>Input Values</h2>
+		<ul id="input_list"></ul>
+		<label for="compare_type">Select whether to compare by vowels or consonants:</label>
+		<select id="compare_type">
+			<option value="vowels">Vowels</option>
+			<option value="consonants">Consonants</option>
+		</select>
+		<button onclick="compareStrings()">Compare</button>
+	</div>
+
+	<div id="output_window" style="display: none;">
+		<h2>Comparison Results</h2>
+		<p id="output_message"></p>
+	</div>
+
+	<script>
+		function getInput() {
+			var num_strings = document.getElementById("num_strings").value;
+			if (num_strings < 2) {
+				alert("Please enter at least 2 strings.");
+				return;
+			}
+			if (num_strings > 5) {
+				alert("Please enter no more than 5 strings.");
+				return;
+			}
+			var input_list = document.getElementById("input_list");
+			input_list.innerHTML = "";
+			for (var i = 1; i <= num_strings; i++) {
+				var input = "";
+				while (true) {
+					input = prompt("Enter string " + i + " :");
+					if (input === null || input === "") {
+						alert("Please enter a valid string.");
+						continue;
+					}
+					if (/[^a-zA-Z]/.test(input)) {
+						alert("Input should only contain alphabetic characters.");
+						continue;
+					}
+					break;
+				}
+				input_list.innerHTML += "<li>" + input + "</li>";
+			}
+			document.getElementById("input_window").style.display = "block";
+		}
+
+		function compareStrings() {
+			var compare_type = document.getElementById("compare_type").value;
+
+			var input_list = document.getElementById("input_list");
+			var input_strings = [];
+			for (var i = 0; i < input_list.children.length; i++) {
+				input_strings.push(input_list.children[i].textContent.toLowerCase());
+			}
+
+			var counts = [];
+			for (var i = 0; i < input_strings.length; i++) {
+				var count = {};
+				for (var j = 0; j < input_strings[i].length; j++) {
+					var char = input_strings[i][j];
+					if (compare_type == "vowels" && isVowel(char)) {
+						if (!count[char]) {
+							count[char] = { count: 0, positions: [] };
+						}
+						count[char].count++;
+						count[char].positions.push(j + 1);
+					}
+					else if (compare_type == "consonants" && isConsonant(char)) {
+						if (!count[char]) {
+							count[char] = { count: 0, positions: [] };
+						}
+						count[char].count++;
+						count[char].positions.push(j + 1);
+					}
+				}
+				counts.push(count);
+			}
+
+			var output_message = "";
+			for (var i = 0; i < input_strings.length; i++) {
+				output_message += "In String " + (i + 1) + ": <br>";
+				if (Object.keys(counts[i]).length === 0) {
+					output_message += "No "+compare_type+" in this string.<br><br>";
+					continue;
+				}
+				for (var char in counts[i]) {
+					output_message += "the character " + char + " count is : " + counts[i][char].count + " and Positions of the character are : ";
+					for (var k = 0; k < counts[i][char].positions.length; k++) {
+						output_message += counts[i][char].positions[k];
+						if (k < counts[i][char].positions.length - 1) {
+							output_message += ", ";
+						}
+					}
+					output_message += "<br>";
+				}
+				output_message += "<br>";
+			}
+
+			var output_window = document.getElementById("output_window");
+			var output_message_elem = document.getElementById("output_message");
+			output_message_elem.innerHTML = output_message;
+			output_window.style.display = "block";
+		}
+
+
+		function isVowel(char) {
+			return /[aeiou]/i.test(char);
+		}
+
+		function isConsonant(char) {
+			return /[bcdfghjklmnpqrstvwxyz]/i.test(char);
+		}
+	</script>
+</body>
+
+</html>
